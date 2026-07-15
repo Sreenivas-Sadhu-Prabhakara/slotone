@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'none'; img-src 'self' data:; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; object-src 'none'">
+  <title>slotone — a booking day-book for a one-person business</title>
+  <meta name="description" content="A single-device appointment day-book for solo operators. Set your services and hours; slotone computes a clean, no-overlap slot grid, books into your local day-book, prints a day sheet, and exports CSV. Private and fully offline.">
+  <meta name="color-scheme" content="light dark">
+  <link rel="canonical" href="https://sreenivas-sadhu-prabhakara.github.io/slotone/">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <meta name="author" content="Sreenivas Sadhu Prabhakara">
+  <meta name="keywords" content="appointment book, booking day-book, solo business scheduling, barber booking, tutor scheduler, slot generator, no-overlap appointments, offline scheduling app, printable day sheet, availability snapshot">
+  <meta name="theme-color" content="#17150F" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#F7F4EE" media="(prefers-color-scheme: light)">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="slotone">
+  <meta property="og:title" content="slotone — a booking day-book for a one-person business">
+  <meta property="og:description" content="Set your services and hours; slotone computes a clean, no-overlap slot grid, books into your local day-book, prints a day sheet, and exports CSV. Private and fully offline.">
+  <meta property="og:url" content="https://sreenivas-sadhu-prabhakara.github.io/slotone/">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:image" content="https://sreenivas-sadhu-prabhakara.github.io/slotone/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="slotone — one operator, one clean day-book">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="slotone — a booking day-book for a one-person business">
+  <meta name="twitter:description" content="Set your services and hours; slotone computes a clean, no-overlap slot grid, books into your local day-book, prints a day sheet, and exports CSV. Private and fully offline.">
+  <meta name="twitter:image" content="https://sreenivas-sadhu-prabhakara.github.io/slotone/og-image.png">
+  <meta name="twitter:image:alt" content="slotone — one operator, one clean day-book">
+
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="manifest" href="manifest.webmanifest">
+
+  <!-- Structured data (data block; not affected by script-src) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "slotone",
+    "description": "A single-device appointment day-book for one-person businesses. Define services and working hours; slotone computes a no-overlap bookable slot grid respecting duration, buffer and blocked dates, books into a local day-book, prints a day sheet, exports CSV, and generates a shareable read-only availability snapshot. Private and fully offline.",
+    "url": "https://sreenivas-sadhu-prabhakara.github.io/slotone/",
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "Any (modern web browser)",
+    "browserRequirements": "Requires a modern web browser with JavaScript enabled.",
+    "isAccessibleForFree": true,
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "license": "https://opensource.org/licenses/MIT",
+    "author": { "@type": "Person", "name": "Sreenivas Sadhu Prabhakara" },
+    "softwareVersion": "0.1.0",
+    "featureList": [
+      "Define services with duration, price and colour",
+      "Set working hours per weekday plus slot interval and buffer",
+      "Days off and one-off blocked dates",
+      "Computed no-overlap slot grid for a day or a week",
+      "Book appointments into a local day-book",
+      "Printable day sheet",
+      "Export bookings to RFC-4180 CSV",
+      "Shareable read-only availability snapshot",
+      "Runs 100% offline in your browser"
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Can my clients book their own appointments through slotone?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "No. slotone is a single-device tool for the owner. Real self-booking needs a shared server that two people can reach at the same time, and slotone has no backend by design. Instead you book appointments yourself, and you can generate a read-only snapshot of your free times to send to a client so they can pick and message you."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How does slotone stop two appointments from overlapping?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "A slot is offered only if the appointment plus its buffer fits inside your working hours and does not collide with any existing appointment's reserved time (its duration plus buffer) or any blocked range. The overlap test is half-open, so an appointment ending at 10:00 and one starting at 10:00 never conflict. This rule is unit-tested."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Where is my booking data stored?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Only in your own browser's local storage on this one device. A strict Content-Security-Policy blocks every network request, so nothing about your clients or schedule is ever transmitted. Clearing your browser data, or using a different device or browser, means the day-book is not there — so export a CSV backup regularly."
+        }
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#daybook">Skip to my day-book</a>
+
+  <!-- ============ HERO ============ -->
+  <header class="hero" id="top">
+    <div class="hero__grid" aria-hidden="true">
+      <svg class="tgrid" viewBox="0 0 1440 460" preserveAspectRatio="xMidYMid slice" role="presentation">
+        <g class="tgrid__lines"></g>
+      </svg>
+    </div>
+
+    <div class="hero__inner">
+      <div class="brandline">
+        <svg class="brandmark" viewBox="0 0 32 32" aria-hidden="true">
+          <rect x="5.5" y="5.5" width="21" height="21" rx="4" fill="none" stroke="currentColor" stroke-width="1.4" opacity="0.5"/>
+          <line x1="5.5" y1="13" x2="26.5" y2="13" stroke="currentColor" stroke-width="1.1" opacity="0.5"/>
+          <line x1="5.5" y1="19.5" x2="26.5" y2="19.5" stroke="currentColor" stroke-width="1.1" opacity="0.5"/>
+          <rect x="7.6" y="14.4" width="9.4" height="3.6" rx="1.8" class="brandmark__fill"/>
+        </svg>
+        <span class="brandline__name">slotone</span>
+      </div>
+      <p class="eyebrow">One operator &middot; one day-book &middot; offline</p>
+      <h1 class="hero__title">Your day, laid out in <span class="hero__accent">clean slots.</span></h1>
+      <p class="hero__lede">
+        slotone is an appointment day-book for a business of <em>one</em> &mdash; a barber, a tutor,
+        a mechanic, a therapist. Set your services and hours; it computes an honest, no-overlap
+        slot grid, and every booking lives on <em>your</em> device. No accounts, no network.
+      </p>
+      <p class="hero__honest">
+        A plain note: this is a single-device owner tool. Clients can&rsquo;t self-book over the
+        internet &mdash; that needs a server this deliberately doesn&rsquo;t have. The
+        <strong>Share</strong> button makes a read-only snapshot of your free times instead.
+      </p>
+    </div>
+  </header>
+
+  <!-- ============ TOOLBAR ============ -->
+  <div class="toolbar" id="daybook">
+    <div class="toolbar__inner">
+      <div class="datectl">
+        <button type="button" class="navbtn" id="prevDay" aria-label="Previous day">&#8249;</button>
+        <label class="datefield">
+          <span class="visually-hidden">Selected date</span>
+          <input type="date" id="dateInput" aria-label="Selected date">
+        </label>
+        <button type="button" class="navbtn" id="nextDay" aria-label="Next day">&#8250;</button>
+        <button type="button" class="btn btn--ghost btn--today" id="todayBtn">Today</button>
+      </div>
+
+      <div class="viewctl" role="tablist" aria-label="View">
+        <button type="button" class="viewtab is-active" id="tabDay" role="tab" aria-selected="true">Day</button>
+        <button type="button" class="viewtab" id="tabWeek" role="tab" aria-selected="false">Week</button>
+      </div>
+
+      <div class="svcctl">
+        <label class="svcpick">
+          <span class="svcpick__label">Service</span>
+          <select id="serviceSelect" aria-label="Service to book"></select>
+        </label>
+      </div>
+
+      <div class="toolbar__actions">
+        <button type="button" class="btn btn--ghost" id="settingsBtn" aria-expanded="false" aria-controls="settings">Settings</button>
+        <button type="button" class="btn btn--ghost" id="printBtn">Print sheet</button>
+        <button type="button" class="btn btn--ghost" id="exportBtn">Export CSV</button>
+        <button type="button" class="btn btn--primary" id="shareBtn">Share free times</button>
+      </div>
+    </div>
+  </div>
+
+  <main>
+    <!-- ============ SETTINGS (collapsible) ============ -->
+    <section class="settings" id="settings" aria-label="Settings" hidden>
+      <div class="settings__inner">
+        <div class="settings__col">
+          <h2 class="settings__h">Business</h2>
+          <label class="field">
+            <span class="field__label">Business name</span>
+            <input type="text" id="bizName" maxlength="60" placeholder="e.g. Ada&rsquo;s Cuts" autocomplete="off">
+          </label>
+          <label class="field">
+            <span class="field__label">Contact line for the share snapshot</span>
+            <input type="text" id="bizContact" maxlength="90" placeholder="e.g. Message 0917-000-0000 to book" autocomplete="off">
+          </label>
+
+          <h2 class="settings__h">Grid rules</h2>
+          <div class="tworow">
+            <label class="field">
+              <span class="field__label">Slot interval</span>
+              <select id="interval">
+                <option value="10">10 min</option>
+                <option value="15" selected>15 min</option>
+                <option value="20">20 min</option>
+                <option value="30">30 min</option>
+                <option value="60">60 min</option>
+              </select>
+            </label>
+            <label class="field">
+              <span class="field__label">Buffer after each appt</span>
+              <select id="buffer">
+                <option value="0" selected>0 min</option>
+                <option value="5">5 min</option>
+                <option value="10">10 min</option>
+                <option value="15">15 min</option>
+                <option value="30">30 min</option>
+              </select>
+            </label>
+          </div>
+          <p class="hint">The grid steps by the interval. Buffer is protected time <em>after</em> each booking (cleanup, notes) that nothing else may use.</p>
+        </div>
+
+        <div class="settings__col">
+          <h2 class="settings__h">Working hours</h2>
+          <div class="hours" id="hours"></div>
+          <p class="hint">Untick a day to mark it off. Times are 24-hour, local to this device.</p>
+        </div>
+
+        <div class="settings__col">
+          <div class="settings__hrow">
+            <h2 class="settings__h settings__h--flush">Services</h2>
+            <button type="button" class="btn btn--mini" id="addService">+ Add service</button>
+          </div>
+          <div class="services" id="servicesList"></div>
+
+          <div class="settings__hrow">
+            <h2 class="settings__h settings__h--flush">Blocked dates</h2>
+            <button type="button" class="btn btn--mini" id="addBlock">+ Block a date</button>
+          </div>
+          <div class="blocks" id="blocksList"></div>
+          <p class="hint">Block a whole date (holiday) or a time range within a date (dentist run, lunch).</p>
+        </div>
+      </div>
+      <div class="settings__foot">
+        <button type="button" class="btn btn--ghost btn--danger" id="wipeBtn">Erase all data</button>
+        <span class="hint">Everything is saved to this browser only, as you type.</span>
+      </div>
+    </section>
+
+    <!-- ============ DAY / WEEK HEADER ============ -->
+    <section class="sheethead" id="sheetHead" aria-live="polite"></section>
+
+    <!-- ============ THE GRID ============ -->
+    <section class="grid" id="grid" aria-label="Slot grid"></section>
+  </main>
+
+  <!-- ============ BOOK DIALOG (non-modal panel) ============ -->
+  <div class="sheet" id="bookSheet" hidden role="dialog" aria-modal="true" aria-labelledby="bookTitle">
+    <div class="sheet__backdrop" id="bookBackdrop"></div>
+    <div class="sheet__panel" role="document">
+      <h2 class="sheet__title" id="bookTitle">Book a slot</h2>
+      <p class="sheet__when" id="bookWhen"></p>
+      <form id="bookForm" novalidate>
+        <label class="field">
+          <span class="field__label">Client name</span>
+          <input type="text" id="clientName" maxlength="80" autocomplete="off" required>
+        </label>
+        <label class="field">
+          <span class="field__label">Note <span class="field__opt">(optional)</span></span>
+          <input type="text" id="clientNote" maxlength="140" autocomplete="off">
+        </label>
+        <div class="sheet__actions">
+          <button type="button" class="btn btn--ghost" id="bookCancel">Cancel</button>
+          <button type="submit" class="btn btn--primary" id="bookConfirm">Book it</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============ SHARE DIALOG ============ -->
+  <div class="sheet" id="shareSheet" hidden role="dialog" aria-modal="true" aria-labelledby="shareTitle">
+    <div class="sheet__backdrop" id="shareBackdrop"></div>
+    <div class="sheet__panel sheet__panel--wide" role="document">
+      <h2 class="sheet__title" id="shareTitle">Share your free times</h2>
+      <p class="sheet__sub">A read-only snapshot of when you&rsquo;re open, for the dates shown. It is <strong>not</strong> a live booking page &mdash; clients read it and message you to book.</p>
+      <div class="share__body" id="shareBody"></div>
+      <div class="sheet__actions">
+        <button type="button" class="btn btn--ghost" id="shareCopy">Copy as text</button>
+        <button type="button" class="btn btn--ghost" id="sharePrint">Print snapshot</button>
+        <button type="button" class="btn btn--primary" id="shareClose">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- toast -->
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="foot">
+    <div class="foot__inner">
+      <p class="foot__disclaimer">
+        <strong>Single-device owner tool, not a booking service.</strong> slotone stores your
+        day-book only in this browser and makes no network requests. It cannot let clients self-book,
+        send reminders, or sync across devices. Keep your own CSV backups &mdash; clearing browser data
+        erases everything. Provided under the MIT License, &ldquo;as is&rdquo;, with no warranty; the
+        author accepts no liability for missed, double, or lost bookings.
+      </p>
+      <p class="foot__meta">
+        <span>Works 100% offline</span><span class="foot__dot">&middot;</span>
+        <span>No network, no accounts</span><span class="foot__dot">&middot;</span>
+        <span>MIT&nbsp;License</span><span class="foot__dot">&middot;</span>
+        <span>&copy; 2026 Sreenivas&nbsp;Sadhu&nbsp;Prabhakara</span>
+      </p>
+    </div>
+  </footer>
+
+  <script src="app.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,24 @@
+{
+  "name": "slotone",
+  "short_name": "slotone",
+  "description": "A single-device appointment day-book for a one-person business. Computes a no-overlap slot grid, books into a local day-book, prints a day sheet, and works fully offline.",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "background_color": "#17150F",
+  "theme_color": "#17150F",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
