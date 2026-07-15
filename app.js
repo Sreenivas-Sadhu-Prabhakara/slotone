@@ -778,21 +778,9 @@
       v.setAttribute("opacity", "0.5");
       frag.appendChild(v);
     }
-    // a scatter of "filled slot" bars — the appointment-card motif
-    var seedBars = [
-      [1, 1], [3, 2], [2, 4], [5, 3], [4, 6], [7, 2], [8, 5], [6, 7], [9, 4], [10, 6], [2, 8], [5, 8]
-    ];
-    seedBars.forEach(function (p) {
-      var col = p[0], row = p[1];
-      var rx = col * colW + 14;
-      var ry = row * rowH + 12;
-      if (rx > W - 40 || ry > H - 20) return;
-      var r = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-      r.setAttribute("x", rx); r.setAttribute("y", ry);
-      r.setAttribute("width", colW - 28); r.setAttribute("height", rowH - 24);
-      r.setAttribute("rx", 5);
-      frag.appendChild(r);
-    });
+    // The ruled rows + faint hour columns alone carry the day-book motif;
+    // no scattered filled bars, so the grid stays clearly behind the headline
+    // instead of reading as empty placeholder boxes.
     g.appendChild(frag);
   }
 
