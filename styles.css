@@ -14,6 +14,7 @@
   --ink:      #211E19;
   --ink-2:    #443E34;
   --muted:    #5C554A;
+  --faint:    #726A5A;   /* dim but legible: placeholders/optional (>=4.5:1 on card) */
   --brass:    #8A5A00;   /* accent for text on light */
   --brass-fill:#C8912F;  /* accent fill */
   --brass-pill:#F6ECD6;
@@ -47,6 +48,7 @@
     --ink:      #EDE7D9;
     --ink-2:    #D6CFBE;
     --muted:    #B0A791;
+    --faint:    #948D78;
     --brass:    #D9A441;
     --brass-fill:#D9A441;
     --brass-pill:#3A2F14;
@@ -293,7 +295,7 @@ select {
 
 .field { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
 .field__label { font-size: 0.78rem; font-weight: 600; color: var(--muted); }
-.field__opt { font-weight: 500; color: var(--line-str); }
+.field__opt { font-weight: 500; color: var(--muted); }
 .field input[type=text],
 .field input[type=date],
 .field input[type=time],
@@ -303,7 +305,7 @@ select {
   border: 1px solid var(--line-str); border-radius: var(--radius-sm);
   padding: 9px 11px; width: 100%;
 }
-.field input::placeholder { color: var(--line-str); }
+.field input::placeholder { color: var(--faint); }
 .field select { width: 100%; max-width: none; }
 .tworow { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .hint { font-size: 0.8rem; color: var(--muted); line-height: 1.45; }
@@ -523,7 +525,7 @@ select {
 .wslot--busy:hover { border-color: var(--line); border-left-color: var(--busy); }
 .wslot--busy .wslot__who { color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .wslot--more { justify-content: center; color: var(--muted); font-weight: 700; border-style: dashed; border-left-style: solid; cursor: default; }
-.weekcol__off { flex: 1; display: grid; place-items: center; color: var(--line-str); font-size: 0.78rem; padding: 16px 4px; }
+.weekcol__off { flex: 1; display: grid; place-items: center; color: var(--muted); font-size: 0.78rem; padding: 16px 4px; }
 
 /* ============================================================
    SHEET / DIALOG
